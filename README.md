@@ -51,7 +51,6 @@ export default defineConfig({
           caller:     'getFont',
         },
       },
-      phpFiles:     ['src/**/*.php'],
     }),
   ],
 });
