@@ -7,3 +7,4 @@ coverage/
 yarn.lock
 npm.lock
 tests/build/
+tests/temp/

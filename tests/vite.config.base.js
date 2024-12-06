@@ -47,4 +47,5 @@ export const pluginOptions = {
       arg: 0,
     },
   },
+  debug: true,
 };
