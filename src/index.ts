@@ -517,7 +517,6 @@ function VitePhpAssetCallers(optionsParam: Options = { assetOptions: undefined }
   return {
     name: VITE_PLUGIN_NAME,
     enforce: 'post',
-    apply: 'build',
 
     /**
      * Get Resolved Config.
