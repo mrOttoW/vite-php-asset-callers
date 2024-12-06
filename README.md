@@ -28,27 +28,27 @@ yarn add -D vite-php-asset-callers
 Add the plugin to your `vite.config.js` file:
 
 ```javascript
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 import VitePhpAssetCallers from 'vite-php-asset-callers';
 
 export default defineConfig({
   plugins: [
     VitePhpAssetCallers({
       assetOptions: {
-        svg:    {
-          path:       'src/assets',
+        svg: {
+          path: 'src/assets',
           extensions: ['svg'],
-          caller:     'getSvg',
+          caller: 'getSvg',
         },
         images: {
-          path:       'src/assets',
+          path: 'src/assets',
           extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp'],
-          caller:     'getImage',
+          caller: 'getImage',
         },
-        fonts:  {
-          path:       'src/assets',
+        fonts: {
+          path: 'src/assets',
           extensions: ['woff', 'woff2'],
-          caller:     'getFont',
+          caller: 'getFont',
         },
       },
     }),
@@ -57,8 +57,9 @@ export default defineConfig({
 ```
 
 ## Options
+
 | Option          | Type       | Description                                                                                     |
-|-----------------|------------|-------------------------------------------------------------------------------------------------|
+| --------------- | ---------- | ----------------------------------------------------------------------------------------------- |
 | `assetOptions`  | `Object`   | Defines the asset types and their associated configurations. See sub-options below.             |
 | └ `path`        | `string`   | The directory where the un-compiled assets are located.                                         |
 | └ `extensions`  | `string[]` | An array of allowed file extensions for the asset type.                                         |
@@ -67,7 +68,6 @@ export default defineConfig({
 | └ `arg`         | `number`   | (optional) The argument index of the asset's file name.                                         |
 | `phpFiles`      | `string[]` | (optional) An array of PHP files to scan in addition to PHP entries.                            |
 | `parserOptions` | `Object`   | (optional) Options passed directly to the [php-parser](https://github.com/glayzzle/php-parser). |
-
 
 ## Example
 
@@ -95,22 +95,22 @@ And the configuration:
 VitePhpAssetCallers({
   assetOptions: {
     images: {
-      path:       'src/assets/images',
+      path: 'src/assets/images',
       extensions: ['jpg', 'png'],
-      caller:     'getImage',
+      caller: 'getImage',
     },
-    svg:    {
-      path:       'src/assets/svg',
+    svg: {
+      path: 'src/assets/svg',
       extensions: ['svg'],
-      caller:     'Utils',
-      method:     'getSvg',
+      caller: 'Utils',
+      method: 'getSvg',
     },
-    fonts:    {
-      path:       'src/assets/fonts',
+    fonts: {
+      path: 'src/assets/fonts',
       extensions: ['swoff', 'woff2'],
-      caller:     'fonts',
-      method:     'getfont',
-      arg:        1,
+      caller: 'fonts',
+      method: 'getfont',
+      arg: 1,
     },
   },
 });
@@ -118,8 +118,7 @@ VitePhpAssetCallers({
 
 The plugin will:
 
-1. Locate `logo.png` in `src/assets/images` 
-2. Locate `coffee.svg` in `src/assets/svg` 
-3. Locate `arial.woff` in `src/assets/fonts` 
+1. Locate `logo.png` in `src/assets/images`
+2. Locate `coffee.svg` in `src/assets/svg`
+3. Locate `arial.woff` in `src/assets/fonts`
 4. Emit the asset files for compilation.
-

@@ -2,7 +2,7 @@ export const VITE_PLUGIN_NAME = 'vite-php-asset-callers';
 export const DEFAULT_OPTIONS = {
   parserOptions: {
     parser: {
-      extractDoc: true,
+      extractDoc: false,
       suppressErrors: true,
       version: 704, // or '7.4'
     },
@@ -14,4 +14,5 @@ export const DEFAULT_OPTIONS = {
       asp_tags: true,
     },
   },
+  debug: false,
 };

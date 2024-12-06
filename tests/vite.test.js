@@ -1,4 +1,4 @@
-import {execSync} from 'child_process';
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
@@ -31,15 +31,15 @@ describe('Test expected compiled images', () => {
       'la.png',
       'rome.png',
       'sofa.png',
-      'venice.png'
+      'venice.png',
     ].forEach(asset => {
-      expect(files.includes(asset)).toBe(true)
-    })
+      expect(files.includes(asset)).toBe(true);
+    });
   });
 
   it('should not make duplicates', () => {
     const files = getAllBuildFiles();
-    expect(files.includes('la2.png')).toBe(false)
+    expect(files.includes('la2.png')).toBe(false);
   });
 
   afterAll(() => {

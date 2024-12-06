@@ -1,7 +1,7 @@
-import {DEFAULT_OPTIONS, VITE_PLUGIN_NAME} from './constants';
-import type {Plugin, ResolvedConfig} from 'vite';
-import {NormalizedOutputOptions, OutputBundle} from 'rollup';
-import {merge} from './utils';
+import { DEFAULT_OPTIONS, VITE_PLUGIN_NAME } from './constants';
+import type { Plugin, ResolvedConfig } from 'vite';
+import { NormalizedOutputOptions, OutputBundle } from 'rollup';
+import { merge } from './utils';
 import fs from 'fs';
 import path from 'path';
 import {
@@ -36,6 +36,7 @@ interface Options {
   assetOptions: Record<string, AssetOption>;
   parserOptions?: any;
   phpFiles?: string[];
+  debug?: boolean;
 }
 
 interface AssetOption {
@@ -52,11 +53,12 @@ interface AssetOption {
  * @param optionsParam
  * @constructor
  */
-function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}): Plugin {
+function VitePhpAssetCallers(optionsParam: Options = { assetOptions: undefined }): Plugin {
   const options: Options = merge(optionsParam, DEFAULT_OPTIONS);
   const emittedAssets = new Set();
   let rootPath: string;
   let rootConfig: ResolvedConfig;
+  let fileParsing: string;
 
   /**
    * Check if an expression is a call expression.
@@ -96,7 +98,8 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
    * @returns
    */
   const parseCallExpression = (expression: Call) => {
-    const isClassCall = expression.what.kind === 'staticlookup' || expression.what.kind === 'propertylookup' || expression.what.kind === 'call'
+    const isClassCall =
+      expression.what.kind === 'staticlookup' || expression.what.kind === 'propertylookup' || expression.what.kind === 'call';
 
     const args: Expression[] = expression.arguments;
     // @ts-ignore types in php-parser are conflicting here.
@@ -104,7 +107,7 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
     // @ts-ignore types in php-parser are conflicting here.
     const method = isClassCall ? expression.what.offset.name : null;
 
-    return {caller, args, method};
+    return { caller, args, method };
   };
 
   /**
@@ -116,6 +119,8 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
    * @param found
    */
   const findAssetsForCaller = (caller: Node | string, method: string, args: Expression[], found: any[]) => {
+    let isAssetCall = false;
+
     for (const type in options.assetOptions) {
       const asset = options.assetOptions[type];
 
@@ -126,6 +131,8 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
       if (caller !== asset.caller) {
         continue;
       }
+
+      isAssetCall = true;
 
       const argIndex = 'arg' in asset ? asset.arg : 0;
       const callerArg = args[String(argIndex)];
@@ -149,6 +156,8 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
         });
       }
     }
+
+    return isAssetCall;
   };
 
   /**
@@ -170,7 +179,22 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
    * @param found
    */
   const resolveCodeBlock = (block: Block, found: string[]) => {
-    block.children.forEach((statement: Statement) => resolveStatement(statement, found));
+    if (block && block.children) {
+      block.children.forEach((statement: Statement) => resolveStatement(statement, found));
+    }
+  };
+
+  /**
+   * Traverse PHP nodes from parser.
+   *
+   * @param node
+   * @param callback
+   */
+  const traversePhpNodes = (node, callback) => {
+    callback(node);
+    if (node.children) {
+      node.children.forEach(child => traversePhpNodes(child, callback));
+    }
   };
 
   /**
@@ -183,6 +207,16 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
   const parsePhpSourceCode = (source: string, fileName: string, found = []) => {
     const parser = new Engine(options.parserOptions);
     const ast: Program = parser.parseCode(source, fileName);
+
+    fileParsing = fileName;
+
+    if (options.debug) {
+      rootConfig.logger.info(`${VITE_PLUGIN_NAME}: Parsing ${fileName}`, { timestamp: true });
+
+      if (!ast || !ast.children) {
+        throw new Error(`${VITE_PLUGIN_NAME}: AST parsing error in ${fileName}`);
+      }
+    }
 
     traversePhpNodes(ast, (node: Node) => resolveNode(node, found));
 
@@ -210,6 +244,9 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
   const resolveDeclaration = (declaration: Node | Declaration, found: string[]) => {
     if (declaration.kind === 'function') {
       resolveFunctionDeclaration(declaration as Function, found);
+    }
+    if (declaration.kind === 'method') {
+      resolveMethodDeclaration(declaration as Method, found);
     }
     if (declaration.kind === 'class') {
       resolveClassDeclaration(declaration as Class, found);
@@ -280,6 +317,16 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
    * @param found
    */
   const resolveFunctionDeclaration = (declaration: Function, found: string[]) => {
+    resolveCodeBody(declaration.body, found);
+  };
+
+  /**
+   * Resolve method declaration.
+   *
+   * @param declaration
+   * @param found
+   */
+  const resolveMethodDeclaration = (declaration: Method, found: string[]) => {
     resolveCodeBody(declaration.body, found);
   };
 
@@ -453,25 +500,14 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
     if (!isCallExpression(expression)) {
       return; // Skip non-call expressions
     }
-    const {caller, method, args} = parseCallExpression(expression);
+    const { caller, method, args } = parseCallExpression(expression);
 
     if (!caller || !args) {
       return; // Skip invalid call expressions
     }
 
-    findAssetsForCaller(caller, method, args, found);
-  };
-
-  /**
-   * Traverse PHP nodes from parser.
-   *
-   * @param node
-   * @param callback
-   */
-  const traversePhpNodes = (node, callback) => {
-    callback(node);
-    if (node.children) {
-      node.children.forEach(child => traversePhpNodes(child, callback));
+    if (findAssetsForCaller(caller, method, args, found) === false) {
+      expression.arguments.forEach((expression: Expression) => resolveExpression(expression, found));
     }
   };
 
@@ -528,4 +564,4 @@ function VitePhpAssetCallers(optionsParam: Options = {assetOptions: undefined}):
   };
 }
 
-export {VitePhpAssetCallers};
+export { VitePhpAssetCallers };
