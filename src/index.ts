@@ -28,7 +28,8 @@ import {
   Function,
   Trait,
   Array,
-  Entry, StaticLookup,
+  Entry,
+  StaticLookup,
 } from 'php-parser';
 
 interface Options {
