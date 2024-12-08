@@ -62,11 +62,9 @@ export default defineConfig({
 | `extensions`    | `string[]` | Asset extensions to search for in PHP code (default: `['png', 'jpg', 'jpeg', 'gif', 'webp', 'woff', 'woff2', 'svg']`). |
 | `parserOptions` | `Object`   | Options passed directly to the [php-parser](https://github.com/glayzzle/php-parser).                                   |
 
-## Example
-
 ## How It Works
 
-1. The plugin scans the specified PHP files.
+1. The plugin automatically scans PHP entries and the specified PHP files in `phpFiles`.
 2. It resolves paths to asset files based on the arguments in PHP function calls.
 3. Matches assets based in Vite's root or on the provided `assetPath` and `extensions`.
 4. Emits the matched assets into the Vite output directory for compilation.
