@@ -96,5 +96,5 @@ echo $fonts->getFont($someValue, 'arial.woff')
 The plugin will:
 
 1. Locate all asset files in the root (`src`) folder based on given `extensions`.
-2. Match an asset with string arguments inside the PHP caller.
-3. Emit the asset files for compilation.
+2. Match each asset with the string arguments provided in the PHP caller.
+3. Emit matched asset file for compilation if it hasn't been emitted before.
