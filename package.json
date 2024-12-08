@@ -1,6 +1,6 @@
 {
   "name": "vite-php-asset-callers",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A Vite 6+ plugin that scans PHP code and emits asset files from PHP callers/functions.",
   "files": [
     "dist/"
