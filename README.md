@@ -75,7 +75,6 @@ export default defineConfig({
 
 Given the following folder structure for source files.
 
-
 ```plaintext
 src/
 └── assets/
