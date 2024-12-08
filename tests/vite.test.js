@@ -4,7 +4,7 @@ import path from 'path';
 
 describe('Test expected compiled images', () => {
   const rootDir = path.resolve(__dirname, '../'); // Root directory of the project
-  const buildDir = path.join(rootDir, 'tests/build'); // Build output directory
+  const buildDir = path.join(rootDir, 'tests/dist'); // Build output directory
   const isDist = process.env.NODE_ENV === 'dist';
 
   const getAllBuildFiles = () => {

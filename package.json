@@ -32,6 +32,7 @@
     "release": "release-it --npm.publishArgs=\"--registry=https://registry.npmjs.org\""
   },
   "dependencies": {
+    "fast-glob": "^3.3.2",
     "php-parser": "^3.2.1"
   },
   "devDependencies": {

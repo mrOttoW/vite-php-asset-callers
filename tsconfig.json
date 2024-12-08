@@ -10,7 +10,8 @@
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
     "lib": ["ESNext"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "downlevelIteration": true
   },
   "include": ["src/index.ts"]
 }

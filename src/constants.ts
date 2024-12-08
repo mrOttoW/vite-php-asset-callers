@@ -1,5 +1,7 @@
 export const VITE_PLUGIN_NAME = 'vite-php-asset-callers';
 export const DEFAULT_OPTIONS = {
+  assetPath: '',
+  extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'woff', 'woff2', 'svg'],
   parserOptions: {
     parser: {
       extractDoc: false,
@@ -14,5 +16,6 @@ export const DEFAULT_OPTIONS = {
       asp_tags: true,
     },
   },
+  phpFiles: [],
   debug: false,
 };
