@@ -75,14 +75,17 @@ export default defineConfig({
 
 Given the following folder structure for source files.
 
-- **`src/`**:
-  - **`assets/`**:
-    - **`svg/`**:
-      - **`coffee.svg`**:
-    - **`images/`**:
-      - **`logo.png`**:
-    - **`fonts/`**:
-      - **`arial.woff`**:
+
+```plaintext
+src/
+└── assets/
+    ├── svg/
+    │   └── coffee.svg
+    ├── images/
+    │   └── logo.png
+    └── fonts/
+        └── arial.woff
+```
 
 Given the following PHP code with different type of callers:
 
@@ -90,7 +93,6 @@ Given the following PHP code with different type of callers:
 <?php
 echo getImage('logo.png');
 echo Utils::getSvg('coffee.svg');
-echo Utils::getSvg('svg/coffee.svg');
 echo $fonts->getFont($someValue, 'arial.woff')
 ```
 
