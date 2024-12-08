@@ -557,10 +557,10 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
 
       for (const phpFile of await fg(options.phpFiles)) {
         if (fs.existsSync(phpFile)) {
-          this.addWatchFile(phpFile)
+          this.addWatchFile(phpFile);
           parseAndEmit(fs.readFileSync(phpFile).toString(), path.basename(phpFile));
         } else {
-          this.error(`${VITE_PLUGIN_NAME}: ${phpFile} does not exist.`)
+          this.error(`${VITE_PLUGIN_NAME}: ${phpFile} does not exist.`);
         }
       }
     },
