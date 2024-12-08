@@ -55,12 +55,12 @@ export default defineConfig({
 
 ## Options
 
-| Option          | Type       | Description                                                                                                            |
-| --------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `assetPath`     | `string`   | Relative path from the root where assets are located to match in PHP files, by default it will use Vite's root path.   |
-| `phpFiles`      | `string[]` | An array of PHP files or glob patterns to scan in addition to PHP entries.                                             |
-| `extensions`    | `string[]` | Asset extensions to search for in PHP code (default: `['png', 'jpg', 'jpeg', 'gif', 'webp', 'woff', 'woff2', 'svg']`). |
-| `parserOptions` | `Object`   | Options passed directly to the [php-parser](https://github.com/glayzzle/php-parser).                                   |
+| Option          | Type       | Description                                                                                                                        |
+| --------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `assetPath`     | `string`   | Relative path from the root where assets are located to match in PHP files, by default it will use Vite's root path.               |
+| `phpFiles`      | `string[]` | An array of PHP files or glob patterns to scan in addition to PHP entries. These files will also be watched in HMR and watch mode. |
+| `extensions`    | `string[]` | Asset extensions to search for in PHP code (default: `['png', 'jpg', 'jpeg', 'gif', 'webp', 'woff', 'woff2', 'svg']`).             |
+| `parserOptions` | `Object`   | Options passed directly to the [php-parser](https://github.com/glayzzle/php-parser).                                               |
 
 ## How It Works
 
