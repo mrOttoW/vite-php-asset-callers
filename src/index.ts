@@ -63,6 +63,17 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
   let fileParsing: string;
 
   /**
+   * Log message.
+   *
+   * @param msg
+   */
+  const log = (msg: string) => {
+    if (options.debug) {
+      rootConfig.logger.info(`${VITE_PLUGIN_NAME}: ${msg}`, { timestamp: true });
+    }
+  };
+
+  /**
    * Traverse PHP nodes from parser.
    *
    * @param node
@@ -90,7 +101,7 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
     fileParsing = fileName;
 
     if (options.debug) {
-      rootConfig.logger.info(`${VITE_PLUGIN_NAME}: Parsing ${fileName}`, { timestamp: true });
+      log(`Parsing ${fileName}`);
 
       if (!ast || !ast.children) {
         throw new Error(`${VITE_PLUGIN_NAME}: AST parsing error in ${fileName}`);
@@ -420,6 +431,7 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
    */
   const queueAssetFileForEmission = (assetFile: string) => {
     if (!emittedAssets.has(assetFile) && fs.existsSync(assetFile)) {
+      log(`Matched & emitting '${path.basename(assetFile)}'`);
       emittedAssets.add(assetFile);
       foundAssets.add({
         name: path.basename(assetFile),
@@ -454,7 +466,16 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
    */
   const getProjectAssetFiles = async () => {
     const patterns = options.extensions.map(ext => `**/*.${ext}`);
-    assetFiles = new Set(await fg(patterns, { cwd: path.join(rootPath, options.assetPath), absolute: true }));
+    const absoluteAssetPath = path.join(rootPath, options.assetPath);
+    assetFiles = new Set(await fg(patterns, { cwd: absoluteAssetPath, absolute: true }));
+
+    if (options.debug) {
+      log(`Will use the following path to search asset files:`);
+      log(`${absoluteAssetPath}`);
+      for (const fullPath of assetFiles) {
+        log(`Found ${fullPath}`);
+      }
+    }
   };
 
   /**
@@ -465,7 +486,7 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
    */
   const findMatchingAssetFile = (partialPath: string): string | null => {
     for (const fullPath of assetFiles) {
-      if (fullPath.includes(partialPath)) {
+      if (fullPath.endsWith(partialPath)) {
         return fullPath;
       }
     }
@@ -496,6 +517,8 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
      * @param bundle
      */
     async generateBundle(bundleOptions: NormalizedOutputOptions, bundle: OutputBundle) {
+      log('Log started..');
+
       await getProjectAssetFiles();
 
       const parseAndEmit = (source: string, fileName: string) => {
