@@ -13,3 +13,7 @@ function coffee(): array {
 function laCity(): array {
   echo getImage( 'la.png' );
 }
+
+function venice(): array {
+  echo Utils::getImage( 'la.png' );
+}

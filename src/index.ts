@@ -398,6 +398,8 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
       return; // Skip invalid call expressions
     }
 
+    //console.log(expression)
+
     if (findAssetsFromCallerArgs(args) === false) {
       expression.arguments.forEach((expression: Expression) => resolveExpression(expression));
     }
@@ -409,12 +411,14 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
    * @param args
    */
   const findAssetsFromCallerArgs = (args: Expression[]) => {
-    for (const arg of args) {
-      if (!isValidCallerArg(arg)) continue;
+    for (const callerArg of args) {
+      if (!isValidStringArg(callerArg)) continue;
 
-      const assetFile = findMatchingAssetFile((arg as String).value);
+      const stringArg: String = callerArg as String;
+      const assetFile = findMatchingAssetFile(stringArg.value);
 
       if (assetFile) {
+        log(`Matched the following argument: '${stringArg.value}'`);
         queueAssetFileForEmission(assetFile);
 
         return true;
@@ -422,6 +426,24 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
     }
 
     return false;
+  };
+
+  /**
+   * Match a file name or partial path with the full path in the asset files Set.
+   *
+   * @param {string} partialPath
+   * @returns {string|null}
+   */
+  const findMatchingAssetFile = (partialPath: string): string | null => {
+    if (isValidFilePath(partialPath)) {
+      for (const fullPath of assetFiles) {
+        if (fullPath.endsWith(partialPath)) {
+          return fullPath;
+        }
+      }
+    }
+
+    return null;
   };
 
   /**
@@ -457,8 +479,18 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
    * @param callerArg
    * @returns
    */
-  const isValidCallerArg = (callerArg: Expression) => {
+  const isValidStringArg = (callerArg: Expression) => {
     return 'value' in callerArg && typeof callerArg.value === 'string';
+  };
+
+  /**
+   * Check if it's a valid file path.
+   *
+   * @param filePath
+   */
+  const isValidFilePath = (filePath: string) => {
+    const regex = new RegExp(`^(?!/|[A-Za-z]:\\\\)(.*\\.(?:${options.extensions.join('|')}))$`);
+    return typeof filePath === 'string' && regex.test(filePath);
   };
 
   /**
@@ -476,21 +508,6 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
         log(`Found ${fullPath}`);
       }
     }
-  };
-
-  /**
-   * Match a file name or partial path with the full path in the asset files Set.
-   *
-   * @param {string} partialPath
-   * @returns {string|null}
-   */
-  const findMatchingAssetFile = (partialPath: string): string | null => {
-    for (const fullPath of assetFiles) {
-      if (fullPath.endsWith(partialPath)) {
-        return fullPath;
-      }
-    }
-    return null;
   };
 
   /**
