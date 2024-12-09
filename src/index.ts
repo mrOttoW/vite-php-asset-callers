@@ -1,6 +1,6 @@
 import { DEFAULT_OPTIONS, VITE_PLUGIN_NAME } from './constants';
 import type { Plugin, ResolvedConfig } from 'vite';
-import { NormalizedOutputOptions, OutputBundle } from 'rollup';
+import { NormalizedOutputOptions, OutputBundle, PluginContext } from 'rollup';
 import { merge } from './utils';
 import fs from 'fs';
 import fg from 'fast-glob';
@@ -58,6 +58,7 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
   const foundAssets: Set<FoundAsset> = new Set();
   const emittedAssets: Set<string> = new Set();
   let assetFiles: Set<string>;
+  let plugin: PluginContext;
   let rootConfig: ResolvedConfig;
   let rootPath: string;
   let fileParsing: string;
@@ -501,12 +502,11 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
     const absoluteAssetPath = path.join(rootPath, options.assetPath);
     assetFiles = new Set(await fg(patterns, { cwd: absoluteAssetPath, absolute: true }));
 
-    if (options.debug) {
-      log(`Will use the following path to search asset files:`);
-      log(`${absoluteAssetPath}`);
-      for (const fullPath of assetFiles) {
-        log(`Found ${fullPath}`);
-      }
+    log(`Will use the following path to search asset files:`);
+    log(`${absoluteAssetPath}`);
+    for (const fullPath of assetFiles) {
+      log(`Found ${fullPath}`);
+      plugin.addWatchFile(fullPath);
     }
   };
 
@@ -515,7 +515,7 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
    */
   return {
     name: VITE_PLUGIN_NAME,
-    enforce: 'post',
+    enforce: 'pre',
 
     /**
      * Get Resolved Config.
@@ -534,6 +534,8 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
      * @param bundle
      */
     async generateBundle(bundleOptions: NormalizedOutputOptions, bundle: OutputBundle) {
+      plugin = this;
+
       log('Log started..');
 
       await getProjectAssetFiles();
