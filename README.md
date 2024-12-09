@@ -1,6 +1,18 @@
-# Vite PHP Asset Callers for Vite 6+
+<div align="center">
+  <a href="https://vitejs.dev/">
+    <img width="200" height="200" hspace="10" src="vite-logo.svg" alt="vite logo" />
+  </a>
+  <h1>️Vite PHP Asset Callers for Vite 6+</h1>
+  <p>
+A Vite plugin designed to identify and emit assets referenced in PHP functions/callers during the build process. It utilizes PHP parsing to find assets (such as image files, SVGs or Fonts, or other resources) embedded within PHP code, processes them, and then emits them as assets for use in the final bundle.
 
-`VitePhpAssetCallers` is a Vite plugin designed to identify and emit assets referenced in PHP functions/callers during the build process. It utilizes PHP parsing to find assets (such as image files, SVGs or Fonts, or other resources) embedded within PHP code, processes them, and then emits them as assets for use in the final bundle.
+</p>
+  <img src="https://img.shields.io/github/v/release/mrOttoW/vite-php-asset-callers" alt="GitHub release" />
+  <img src="https://img.shields.io/npm/dependency-version/vite-php-asset-callers/peer/vite" alt="npm peer dependency version" />
+  <img alt="Node Current" src="https://img.shields.io/node/v/vite-php-asset-callers">
+  <img src="https://img.shields.io/github/last-commit/mrOttoW/vite-php-asset-callers" alt="GitHub last commit"/>
+  <img src="https://img.shields.io/npm/l/vite-php-asset-callers" alt="licence" />
+</div>
 
 ## Features
 
