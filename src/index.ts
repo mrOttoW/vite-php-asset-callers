@@ -535,11 +535,9 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
      */
     async generateBundle(bundleOptions: NormalizedOutputOptions, bundle: OutputBundle) {
       plugin = this;
-
-      log('Log started..');
-
+      emittedAssets.clear();
+      log('Cleared emittedAssets..');
       await getProjectAssetFiles();
-
       const parseAndEmit = (source: string, fileName: string) => {
         parsePhpSourceCode(source, fileName).forEach((asset: FoundAsset) => {
           this.emitFile({
