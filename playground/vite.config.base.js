@@ -1,7 +1,7 @@
 import path from 'path';
 
 export const config = {
-  root: `tests`,
+  root: `playground`,
   assetsInclude: ['**/*.php'],
   build: {
     manifest: true,

@@ -2,7 +2,7 @@
   <a href="https://vitejs.dev/">
     <img width="200" height="200" hspace="10" src="vite-logo.svg" alt="vite logo" />
   </a>
-  <h1>️Vite PHP Asset Callers for Vite 6+</h1>
+  <h1>️Vite PHP Asset Callers for Vite 6</h1>
   <p>
 A Vite plugin designed to identify and emit assets referenced in PHP functions/callers during the build process. It utilizes PHP parsing to find assets (such as image files, SVGs or Fonts, or other resources) embedded within PHP code, processes them, and then emits them as assets for use in the final bundle.
 

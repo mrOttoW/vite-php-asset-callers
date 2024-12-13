@@ -1,6 +1,6 @@
 import { DEFAULT_OPTIONS, VITE_PLUGIN_NAME } from './constants';
 import type { Plugin, ResolvedConfig } from 'vite';
-import { NormalizedOutputOptions, OutputBundle, PluginContext } from 'rollup';
+import { NormalizedOutputOptions, OutputBundle } from 'rollup';
 import { merge } from './utils';
 import fs from 'fs';
 import fg from 'fast-glob';
@@ -28,7 +28,7 @@ import {
   Declaration,
   Function,
   Trait,
-  Array,
+  Array as ParsedArray,
   Entry,
   String,
 } from 'php-parser';
@@ -36,7 +36,7 @@ import {
 interface Options {
   extensions?: string[];
   assetPath?: string;
-  parserOptions?: any;
+  parserOptions?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   phpFiles?: string[];
   debug?: boolean;
 }
@@ -55,13 +55,12 @@ interface FoundAsset {
  */
 function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
   const options: Options = merge(optionsParam, DEFAULT_OPTIONS);
-  const foundAssets: Set<FoundAsset> = new Set();
-  const emittedAssets: Set<string> = new Set();
+  const foundAssets = new Set<FoundAsset>();
+  const emittedAssets = new Set<string>();
   let assetFiles: Set<string>;
-  let plugin: PluginContext;
   let rootConfig: ResolvedConfig;
   let rootPath: string;
-  let fileParsing: string;
+  let fileParsing: string; // eslint-disable-line @typescript-eslint/no-unused-vars
 
   /**
    * Log message.
@@ -186,7 +185,7 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
       resolveClosureExpression(expression as Closure);
     }
     if (expression.kind === 'array') {
-      resolveArrayExpression(expression as Array);
+      resolveArrayExpression(expression as ParsedArray);
     }
     if (expression.kind === 'entry') {
       resolveEntryExpression(expression as Entry);
@@ -367,7 +366,7 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
    *
    * @param expression
    */
-  const resolveArrayExpression = (expression: Array) => {
+  const resolveArrayExpression = (expression: ParsedArray) => {
     expression.items.forEach((item: Entry | Expression | Variable) => resolveExpression(item));
   };
 
@@ -504,10 +503,6 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
 
     log(`Will use the following path to search asset files:`);
     log(`${absoluteAssetPath}`);
-    for (const fullPath of assetFiles) {
-      log(`Found ${fullPath}`);
-      plugin.addWatchFile(fullPath);
-    }
   };
 
   /**
@@ -534,10 +529,14 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
      * @param bundle
      */
     async generateBundle(bundleOptions: NormalizedOutputOptions, bundle: OutputBundle) {
-      plugin = this;
       emittedAssets.clear();
       log('Cleared emittedAssets..');
       await getProjectAssetFiles();
+
+      for (const fullPath of assetFiles) {
+        log(`Found ${fullPath}`);
+        this.addWatchFile(fullPath);
+      }
       const parseAndEmit = (source: string, fileName: string) => {
         parsePhpSourceCode(source, fileName).forEach((asset: FoundAsset) => {
           this.emitFile({
@@ -549,7 +548,7 @@ function VitePhpAssetCallers(optionsParam: Options = {}): Plugin {
         });
       };
 
-      for (let module of Object.values(bundle)) {
+      for (const module of Object.values(bundle)) {
         if (module.fileName.endsWith('.php') && 'source' in module) {
           parseAndEmit(module.source.toString(), module.fileName);
         }

@@ -2,9 +2,9 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-describe('Test expected compiled images', () => {
+describe('Test compiled assets', () => {
   const rootDir = path.resolve(__dirname, '../'); // Root directory of the project
-  const buildDir = path.join(rootDir, 'tests/dist'); // Build output directory
+  const buildDir = path.join(rootDir, 'playground/dist'); // Build output directory
   const isDist = process.env.NODE_ENV === 'dist';
 
   const getAllBuildFiles = () => {
@@ -12,7 +12,7 @@ describe('Test expected compiled images', () => {
   };
 
   beforeAll(() => {
-    execSync(isDist ? 'yarn test-build-dist' : 'yarn test-build', {
+    execSync(isDist ? 'yarn playground-build-dist' : 'yarn playground-build', {
       cwd: rootDir,
       stdio: 'inherit',
     });

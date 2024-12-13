@@ -1,5 +1,7 @@
 // eslint.config.js
-import js from '@eslint/js';
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import vitest from '@vitest/eslint-plugin';
 import globals from 'globals';
 
 export default [
@@ -10,17 +12,24 @@ export default [
       globals: {
         ...globals.jquery,
         ...globals.node,
+        ...vitest.environments.env.globals,
       },
     },
   },
   {
-    ignores: ['tests/**', 'node_modules/**', 'dist/**', '.idea/**', '.vscode/**', 'reports/**', 'tar/**', '!**/*.js', '!**/*.ts'],
+    ignores: ['playground/**', 'node_modules/**', 'dist/**', '.idea/**', '.vscode/**', 'reports/**', 'tar/**', '!**/*.js', '!**/*.ts'],
   },
-  js.configs.recommended,
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.stylistic,
   {
     rules: {
-      'no-unused-vars': 'error',
+      'no-unused-vars': 'off',
       'no-undef': 'error',
     },
+  },
+  {
+    files: ['test/*.test.js'],
+    ...vitest.configs.recommended,
   },
 ];

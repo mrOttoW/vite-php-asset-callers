@@ -6,5 +6,5 @@ coverage/
 .phpunit.result.cache
 yarn.lock
 npm.lock
-tests/build/
-tests/temp/
+playground/build/
+playground/temp/
