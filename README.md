@@ -7,6 +7,7 @@
 A Vite plugin designed to identify and emit assets referenced in PHP functions/callers during the build process. It utilizes PHP parsing to find assets (such as image files, SVGs or Fonts, or other resources) embedded within PHP code, processes them, and then emits them as assets for use in the final bundle.
 
 </p>
+  <img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/vite-php-asset-callers">
   <img src="https://img.shields.io/github/v/release/mrOttoW/vite-php-asset-callers" alt="GitHub release" />
   <img src="https://img.shields.io/npm/dependency-version/vite-php-asset-callers/peer/vite" alt="npm peer dependency version" />
   <img alt="Node Current" src="https://img.shields.io/node/v/vite-php-asset-callers">
